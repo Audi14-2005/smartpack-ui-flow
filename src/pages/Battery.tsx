@@ -4,10 +4,10 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { BatteryStatus } from '@/components/ui/BatteryStatus';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CircularProgress } from '@/components/ui/CircularProgress';
-import { Battery, Clock, BatteryFull, BatteryLow, Zap, Activity } from 'lucide-react';
+import { Battery as BatteryIcon, Clock, BatteryFull, BatteryLow, Zap, Activity } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
-const Battery = () => {
+const BatteryPage = () => {
   const [batteryLevel, setBatteryLevel] = useState(75);
   const [isCharging, setIsCharging] = useState(false);
   const [estimatedHours, setEstimatedHours] = useState(6);
@@ -177,4 +177,4 @@ const Battery = () => {
   );
 };
 
-export default Battery;
+export default BatteryPage;

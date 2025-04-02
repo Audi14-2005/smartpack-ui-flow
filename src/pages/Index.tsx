@@ -4,7 +4,7 @@ import { BottomNav } from '@/components/layout/BottomNav';
 import { BatteryStatus } from '@/components/ui/BatteryStatus';
 import { WeatherCard } from '@/components/ui/WeatherCard';
 import { WeightMonitor } from '@/components/ui/WeightMonitor';
-import { BookOpen, Bell } from 'lucide-react';
+import { BookOpen, Bell, Battery, Package } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { NotificationItem, Notification } from '@/components/ui/NotificationItem';
 import { useToast } from '@/hooks/use-toast';
@@ -102,7 +102,7 @@ const Index = () => {
                 
                 <div className="flex flex-col items-center">
                   <div className="p-3 bg-purple-100 dark:bg-purple-900/20 rounded-full mb-2">
-                    <Weight className="h-6 w-6 text-purple-500" />
+                    <Package className="h-6 w-6 text-purple-500" />
                   </div>
                   <span className="text-2xl font-bold">{bagWeight}kg</span>
                   <span className="text-sm text-gray-500">Weight</span>
