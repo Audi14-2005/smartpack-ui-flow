@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from 'next-themes';
 import { 
   Settings as SettingsIcon, 
   Bell, 
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/button';
 
 const Settings = () => {
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
   
   // Settings state
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
@@ -28,6 +30,25 @@ const Settings = () => {
   const [lowBatteryThreshold, setLowBatteryThreshold] = useState(20);
   const [autoScanBooks, setAutoScanBooks] = useState(true);
   const [bluetoothEnabled, setBluetoothEnabled] = useState(true);
+  const [mounted, setMounted] = useState(false);
+  
+  // Update dark mode state when theme changes
+  useEffect(() => {
+    setMounted(true);
+    setDarkModeEnabled(theme === 'dark');
+  }, [theme]);
+  
+  // Toggle dark mode
+  const handleDarkModeToggle = (checked: boolean) => {
+    setDarkModeEnabled(checked);
+    setTheme(checked ? 'dark' : 'light');
+    
+    toast({
+      title: `${checked ? 'Dark' : 'Light'} mode enabled`,
+      description: `The app is now in ${checked ? 'dark' : 'light'} mode`,
+      duration: 2000
+    });
+  };
   
   const handleReset = () => {
     toast({
@@ -39,6 +60,7 @@ const Settings = () => {
     // Reset to defaults
     setNotificationsEnabled(true);
     setDarkModeEnabled(false);
+    setTheme('light');
     setMaxWeightAlert(5);
     setLowBatteryThreshold(20);
     setAutoScanBooks(true);
@@ -87,6 +109,9 @@ const Settings = () => {
     </div>
   );
 
+  // Don't render until mounted to prevent hydration mismatch
+  if (!mounted) return null;
+
   return (
     <div className="pb-20 max-w-lg mx-auto">
       <div className="p-4">
@@ -121,7 +146,7 @@ const Settings = () => {
               control={
                 <Switch 
                   checked={darkModeEnabled} 
-                  onCheckedChange={setDarkModeEnabled} 
+                  onCheckedChange={handleDarkModeToggle} 
                 />
               }
             />
