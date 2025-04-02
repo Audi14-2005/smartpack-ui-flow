@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { WeatherCard } from '@/components/ui/WeatherCard';
@@ -36,30 +35,25 @@ const Weather = () => {
   const [needUmbrella, setNeedUmbrella] = useState(false);
   
   useEffect(() => {
-    // Check if umbrella is needed today
     setNeedUmbrella(currentWeather.chanceOfRain > 50);
   }, [currentWeather.chanceOfRain]);
 
-  // Function to convert weather code to our condition type
   const mapWeatherCondition = (code: number): 'sunny' | 'cloudy' | 'rainy' => {
-    // Weather condition codes based on OpenWeatherMap API
-    // Clear: 800
-    // Clouds: 801-804
-    // Rain: 500-531
     if (code === 800) return 'sunny';
     if (code >= 801 && code <= 804) return 'cloudy';
     if ((code >= 500 && code <= 531) || 
         (code >= 300 && code <= 321) || 
         (code >= 200 && code <= 232)) return 'rainy';
-    return 'cloudy'; // Default fallback
+    return 'cloudy';
   };
   
   useEffect(() => {
     const fetchWeatherData = async (lat: number, lon: number) => {
       try {
-        // First, get the location name using reverse geocoding
+        const API_KEY = "021457b9afbdf8f32f06810f52d43727";
+        
         const geoResponse = await fetch(
-          `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=9c70bc7e6f7dd2a3e5d70df9d8e5a5f3`
+          `https://api.openweathermap.org/geo/1.0/reverse?lat=${lat}&lon=${lon}&limit=1&appid=${API_KEY}`
         );
         
         if (!geoResponse.ok) throw new Error('Failed to fetch location data');
@@ -70,34 +64,30 @@ const Weather = () => {
           const country = geoData[0].country;
           setCurrentLocation(`${locationName}, ${country}`);
           
-          // Then fetch the current weather data
           const weatherResponse = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=9c70bc7e6f7dd2a3e5d70df9d8e5a5f3`
+            `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
           );
           
           if (!weatherResponse.ok) throw new Error('Failed to fetch weather data');
           
           const weatherData = await weatherResponse.json();
           
-          // Update current weather state
           setCurrentWeather({
             temperature: Math.round(weatherData.main.temp),
             condition: mapWeatherCondition(weatherData.weather[0].id),
             humidity: weatherData.main.humidity,
-            chanceOfRain: weatherData.clouds.all, // Using cloudiness as a proxy for chance of rain
+            chanceOfRain: weatherData.clouds.all,
             windSpeed: Math.round(weatherData.wind.speed),
           });
           
-          // Fetch forecast data
           const forecastResponse = await fetch(
-            `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=9c70bc7e6f7dd2a3e5d70df9d8e5a5f3`
+            `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`
           );
           
           if (!forecastResponse.ok) throw new Error('Failed to fetch forecast data');
           
           const forecastData = await forecastResponse.json();
           
-          // Group forecast by day and extract relevant information
           const dailyForecasts = forecastData.list.reduce((acc: any, item: any) => {
             const date = new Date(item.dt * 1000);
             const day = date.toLocaleDateString('en-US', { weekday: 'long' });
@@ -114,9 +104,7 @@ const Weather = () => {
             return acc;
           }, {});
           
-          // Convert to array and update state
           setForecast(Object.values(dailyForecasts));
-          
         } else {
           setCurrentLocation('Location not found');
         }
@@ -132,7 +120,6 @@ const Weather = () => {
       }
     };
     
-    // Get user's location
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
@@ -190,7 +177,6 @@ const Weather = () => {
           </div>
         ) : (
           <>
-            {/* Today's Weather */}
             <div className="mb-6">
               <WeatherCard
                 temperature={currentWeather.temperature}
@@ -200,7 +186,6 @@ const Weather = () => {
               />
             </div>
             
-            {/* Umbrella Reminder */}
             {needUmbrella && (
               <Card className="mb-6 bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800">
                 <CardContent className="p-4">
@@ -219,7 +204,6 @@ const Weather = () => {
               </Card>
             )}
             
-            {/* Weather Details */}
             <div className="grid grid-cols-2 gap-4 mb-6">
               <Card>
                 <CardContent className="p-4 flex flex-col items-center justify-center">
@@ -238,7 +222,6 @@ const Weather = () => {
               </Card>
             </div>
             
-            {/* 5-Day Forecast */}
             <Card>
               <CardHeader className="pb-2">
                 <CardTitle className="text-xl">5-Day Forecast</CardTitle>
