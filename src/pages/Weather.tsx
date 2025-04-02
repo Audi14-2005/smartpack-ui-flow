@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { BottomNav } from '@/components/layout/BottomNav';
 import { WeatherCard } from '@/components/ui/WeatherCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sun, Cloud, CloudRain, Umbrella, Wind, Droplets } from 'lucide-react';
+import { Sun, Cloud, CloudRain, Umbrella, Wind, Droplets, MapPin } from 'lucide-react';
 
 type DayForecast = {
   day: string;
@@ -13,6 +13,7 @@ type DayForecast = {
 };
 
 const Weather = () => {
+  const [currentLocation, setCurrentLocation] = useState('Unknown location');
   const [currentWeather, setCurrentWeather] = useState({
     temperature: 24,
     condition: 'cloudy' as 'sunny' | 'cloudy' | 'rainy',
@@ -36,6 +37,29 @@ const Weather = () => {
     setNeedUmbrella(currentWeather.chanceOfRain > 50);
   }, [currentWeather.chanceOfRain]);
   
+  useEffect(() => {
+    // Get user's location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          // For demonstration, we'll just show the coordinates
+          // In a real app, you would reverse geocode these coordinates to get the city name
+          const { latitude, longitude } = position.coords;
+          setCurrentLocation(`${latitude.toFixed(2)}°, ${longitude.toFixed(2)}°`);
+          
+          // Here you would typically make an API call to a weather service using these coordinates
+          console.log("Location obtained:", latitude, longitude);
+        },
+        (error) => {
+          console.error("Error getting location:", error);
+          setCurrentLocation("Location access denied");
+        }
+      );
+    } else {
+      setCurrentLocation("Geolocation not supported by this browser");
+    }
+  }, []);
+  
   const getWeatherIcon = (condition: 'sunny' | 'cloudy' | 'rainy', size: number = 6) => {
     const className = `h-${size} w-${size}`;
     switch (condition) {
@@ -53,7 +77,10 @@ const Weather = () => {
       <div className="p-4">
         <div className="mb-6">
           <h1 className="text-2xl font-bold">Weather Forecast</h1>
-          <p className="text-gray-500">Plan ahead for your day</p>
+          <div className="flex items-center text-gray-500">
+            <MapPin className="h-4 w-4 mr-1" />
+            <p>{currentLocation}</p>
+          </div>
         </div>
         
         {/* Today's Weather */}
